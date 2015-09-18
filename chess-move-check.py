@@ -399,10 +399,10 @@ if len(sys.argv) <= 1:
 Usage:	python chess-move-check.py <board-state-txt>
 
 Info:	The script takes in a text file that determines the state of the chessboard.
-		The first line of the text file should be the current turn's player color.
-		Each line in the rest of the file represent a piece in this format:
+		The first line of the text file must be the current turn's player.
+		Each line in the rest of the file represent a chess piece in this format:
 
-			Color,Piece Name,Location
+			<Color>,<Piece Name>,<Location>
 
 		One example of this is:
 
