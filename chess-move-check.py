@@ -243,7 +243,7 @@ class Queen(Piece):
 		# Makes code below easier to read
 		x = self.position['x']
 		y = self.position['y']
-		
+
 		neighbors = [
 			{'dX': 1, 'dY': 1}, # Up-right
 			{'dX': 1, 'dY': -1}, # Down-right
@@ -275,7 +275,7 @@ class Rook(Piece):
 		# Makes code below easier to read
 		x = self.position['x']
 		y = self.position['y']
-		
+
 		neighbors = [
 			{'dX': 0, 'dY': 1}, # Up
 			{'dX': 1, 'dY': 0}, # Right
