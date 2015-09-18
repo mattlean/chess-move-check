@@ -121,15 +121,16 @@ class Pawn(Piece):
 		# Check if pawn can move forward
 		oneAheadPos = {'x': x, 'y': y + (1 * direction)}
 
-		if self.checkBounds(oneAheadPos) and chessboard.getPos(oneAheadPos) is None:
-			possibleMoves.append(oneAheadPos)
+		if self.checkBounds(oneAheadPos):
+			if chessboard.getPos(oneAheadPos) is None:
+				possibleMoves.append(oneAheadPos)
+			
+				# If pawn is in start position, check if can move 2 squares
+				if (chessboard.playerColor == 'White' and y == 1) or (chessboard.playerColor == 'Black' and y == 6):
+					twoAheadPos = {'x': x, 'y': y + (2 * direction)}
 
-		# Check if pawn move 2 squares if it's in start position
-		if (chessboard.playerColor == 'White' and y == 1) or (chessboard.playerColor == 'Black' and y == 6):
-			twoAheadPos = {'x': x, 'y': y + (2 * direction)}
-
-			if self.checkBounds(twoAheadPos) and chessboard.getPos(twoAheadPos) is None:
-				possibleMoves.append(twoAheadPos)
+					if self.checkBounds(twoAheadPos) and chessboard.getPos(twoAheadPos) is None:
+						possibleMoves.append(twoAheadPos)
 
 		# Check if pawn can capture
 		captureOptions = [
