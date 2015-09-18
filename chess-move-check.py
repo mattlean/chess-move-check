@@ -96,7 +96,7 @@ class King(Piece):
 			if self.checkBounds(option):
 				if chessboard.getPos(option) is None:
 					possibleMoves.append(option)
-				elif chessboard.getPos(option).color != playerColor:
+				elif chessboard.getPos(option).color != chessboard.playerColor:
 					possibleMoves.append(option)
 
 		return possibleMoves
@@ -190,15 +190,18 @@ class Chessboard:
 			self.pieces.append(newPiece)
 
 	def printLegalMoves(self):
-		#iterate through each piece and do the following
 		moveCount = 0
-		currName = chessboard.pieces[0].name
-		currPos = chessboard.pieces[0].position
-		possibleMoves = chessboard.pieces[0].calcMoves(self)
-		
-		for possibleMove in possibleMoves:
-			print currName + ' at ' + formatChess(currPos) + ' can move to ' + formatChess(possibleMove)
-			moveCount += 1
+
+		if self.pieces[0].color == self.playerColor:
+			#iterate through each piece and do the following
+			
+			currName = self.pieces[0].name
+			currPos = self.pieces[0].position
+			possibleMoves = self.pieces[0].calcMoves(self)
+			
+			for possibleMove in possibleMoves:
+				print currName + ' at ' + formatChess(currPos) + ' can move to ' + formatChess(possibleMove)
+				moveCount += 1
 
 		print str(moveCount) + ' legal moves (' + str(len(self.pieces)) + ' unique pieces) for ' + self.playerColor.lower() + ' player'
 
