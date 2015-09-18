@@ -93,10 +93,10 @@ class King(Piece):
 
 		# Calculate valid moves
 		for option in moveOptions:
-			if self.checkBounds(option):
-				if chessboard.getPos(option) is None:
+			if self.checkBounds(option): # King can only move within board size
+				if chessboard.getPos(option) is None: # King can move to empty position
 					possibleMoves.append(option)
-				elif chessboard.getPos(option).color != chessboard.playerColor:
+				elif chessboard.getPos(option).color != chessboard.playerColor: # King can capture
 					possibleMoves.append(option)
 
 		return possibleMoves
@@ -124,12 +124,25 @@ class Pawn(Piece):
 		if self.checkBounds(oneAheadPos) and chessboard.getPos(oneAheadPos) is None:
 			possibleMoves.append(oneAheadPos)
 
-		# Check if pawn move 2 squares from start position
+		# Check if pawn move 2 squares if it's in start position
 		if (chessboard.playerColor == 'White' and y == 1) or (chessboard.playerColor == 'Black' and y == 6):
 			twoAheadPos = {'x': x, 'y': y + (2 * direction)}
 
 			if self.checkBounds(twoAheadPos) and chessboard.getPos(twoAheadPos) is None:
 				possibleMoves.append(twoAheadPos)
+
+		# Check if pawn can capture
+		captureOptions = [
+			{'x': x + 1, 'y': y + (1 * direction)}, # Forward-right
+			{'x': x - 1, 'y': y + (1 * direction)} # Forward-left
+		]
+
+		# Calculate valid captures
+		for option in captureOptions:
+			if self.checkBounds(option):
+				if chessboard.getPos(option) is not None:
+					if chessboard.getPos(option).color != chessboard.playerColor:
+						possibleMoves.append(option)
 
 		return possibleMoves
 
@@ -213,18 +226,20 @@ class Chessboard:
 
 	def printLegalMoves(self):
 		moveCount = 0
+		pieceCount = 0
 
 		for piece in self.pieces:
 			if piece.color == self.playerColor:
 				currName = piece.name
 				currPos = piece.position
 				possibleMoves = piece.calcMoves(self)
+				pieceCount += 1
 			
 				for possibleMove in possibleMoves:
 					print currName + ' at ' + formatChess(currPos) + ' can move to ' + formatChess(possibleMove)
 					moveCount += 1
 
-		print str(moveCount) + ' legal moves (' + str(len(self.pieces)) + ' unique pieces) for ' + self.playerColor.lower() + ' player'
+		print str(moveCount) + ' legal moves (' + str(pieceCount) + ' unique pieces) for ' + self.playerColor.lower() + ' player'
 
 	# Show what is at position (x,y) on the board
 	def getPos(self, position):

@@ -1,5 +1,7 @@
-white
-bLaCk,KiNg,g:3
+black
+bLaCk,KiNg,g:4
 white,PAwn,D:4
 white,pawn,h:2
 white,pawn,C:7
+black,pawn,C:8
+black,pawn,g:3
