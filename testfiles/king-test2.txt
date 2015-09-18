@@ -1,0 +1,5 @@
+white
+white,king,a:8
+black,rook,b:8
+white,bishop,a:7
+black,king,h:4
