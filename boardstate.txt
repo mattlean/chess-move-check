@@ -1,5 +1,5 @@
 WHITe
-bLaCk,KiNg,h:8
+bLaCk,KiNg,h:3
 white,PAwn,D:4
 BLACK,RoOk,F:3
 white,queen,E:6

@@ -54,8 +54,8 @@ class Piece:
 		self.position = formatIndex(position)
 
 	# Checks if input position (must be in index format) is within the bounds of the board
-	def checkBounds(self, x, y):
-		if x < 0 or x >= BOARD_SIZE or y < 0 or y >= BOARD_SIZE:
+	def checkBounds(self, position):
+		if position['x'] < 0 or position['x'] >= BOARD_SIZE or position['y'] < 0 or position['y'] >= BOARD_SIZE:
 			return False
 		return True
 
@@ -72,44 +72,32 @@ class Piece:
 ### King Class which inherits from Piece ###
 class King(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
-	def calcMoves(self, playerColor, board):
+	def calcMoves(self, chessboard):
 		possibleMoves = [] # List of possible moves to return
 
 		# Makes code below easier to read
 		x = self.position['x']
 		y = self.position['y']
 
-		# Move up
-		if self.checkBounds(x, y + 1):
-			possibleMoves.append({'x': x, 'y': y + 1})
-		
-		# Move up-right
-		if self.checkBounds(x + 1, y + 1):
-			possibleMoves.append({'x': x + 1, 'y': y + 1})
+		# King movement options
+		moveOptions = [
+			{'x': x, 'y': y + 1}, # Up
+			{'x': x + 1, 'y': y + 1}, # Up-right
+			{'x': x + 1, 'y': y}, # Right
+			{'x': x + 1, 'y': y - 1}, # Bottom-right
+			{'x': x, 'y': y - 1}, # Bottom
+			{'x': x - 1, 'y': y - 1}, # Bottom-left
+			{'x': x - 1, 'y': y}, # Left
+			{'x': x - 1, 'y': y + 1}, # Up-left
+		]
 
-		# Move right
-		if self.checkBounds(x + 1, y):
-			possibleMoves.append({'x': x + 1, 'y': y})
-
-		# Move down-right
-		if self.checkBounds(x + 1, y - 1):
-			possibleMoves.append({'x': x + 1, 'y': y - 1})
-
-		# Move down
-		if self.checkBounds(x, y - 1):
-			possibleMoves.append({'x': x, 'y': y - 1})
-
-		# Move down-left
-		if self.checkBounds(x - 1, y - 1):
-			possibleMoves.append({'x': x - 1, 'y': y - 1})
-
-		# Move left
-		if self.checkBounds(x - 1, y):
-			possibleMoves.append({'x': x - 1, 'y': y})
-
-		# Move up-left
-		if self.checkBounds(x - 1, y + 1):
-			possibleMoves.append({'x': x - 1, 'y': y + 1})
+		# Calculate valid moves
+		for option in moveOptions:
+			if self.checkBounds(option):
+				if chessboard.getPos(option) is None:
+					possibleMoves.append(option)
+				elif chessboard.getPos(option).color != playerColor:
+					possibleMoves.append(option)
 
 		return possibleMoves
 
@@ -206,7 +194,7 @@ class Chessboard:
 		moveCount = 0
 		currName = chessboard.pieces[0].name
 		currPos = chessboard.pieces[0].position
-		possibleMoves = chessboard.pieces[0].calcMoves(chessboard.playerColor, chessboard.board)
+		possibleMoves = chessboard.pieces[0].calcMoves(self)
 		
 		for possibleMove in possibleMoves:
 			print currName + ' at ' + formatChess(currPos) + ' can move to ' + formatChess(possibleMove)
@@ -215,11 +203,10 @@ class Chessboard:
 		print str(moveCount) + ' legal moves (' + str(len(self.pieces)) + ' unique pieces) for ' + self.playerColor.lower() + ' player'
 
 	# Show what is at position (x,y) on the board
-	def printPos(self, x, y):
-		if self.board[x][y] is None:
-			print None
-		else:
-			self.board[x][y].printPiece()
+	def getPos(self, position):
+		if self.board[position['x']][position['y']] is None:
+			return None
+		return self.board[position['x']][position['y']]
 
 	# Print chessboard data
 	def printData(self):
@@ -237,9 +224,3 @@ inputFile.close()
 
 chessboard = Chessboard(validAttr(fileBreakdown[0], COLORSET), fileBreakdown[1:])
 chessboard.printLegalMoves()
-"""chessboard.printData()
-chessboard.printPos(0,3)
-chessboard.printPos(7,7)
-chessboard.printPos(3,3)
-chessboard.printPos(5,2)
-chessboard.printPos(5,1)"""
