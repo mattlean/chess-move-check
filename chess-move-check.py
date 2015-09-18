@@ -59,6 +59,35 @@ class Piece:
 			return False
 		return True
 
+	# Recursively traverses board in a straight line until it reaches the end.
+	# dX & dY controls change in location per recursion.
+	# level shows how deep into recursion the program is.
+	def linearTraversal(self, position, dX, dY, level):
+		nextPos = {'x': position['x'] + dX, 'y': position['y'] + dY}
+		possibleMoves = []
+
+		# Check if next position is within bounds
+		if self.checkBounds(nextPos): 
+			if chessboard.getPos(nextPos) is None:
+				level += 1
+				possibleMoves = self.linearTraversal(nextPos, dX, dY, level)
+				possibleMoves.append(position)
+			# Possible capture, account for potential enemy space and end recursive chain
+			elif chessboard.getPos(nextPos).color != chessboard.playerColor:
+				possibleMoves.append(nextPos)
+				possibleMoves.append(position)
+				return possibleMoves
+			# Collision with friendly piece, end recursive chain immediately
+			else:
+				possibleMoves.append(position)
+				return possibleMoves
+		else:
+			# Collion with board boundary, end recursive chain
+			possibleMoves.append(position)
+			return possibleMoves
+
+		return possibleMoves
+
 	# Implementation for move validation. Changes depending on piece type.
 	def calcMoves(self, board):
 		raise NotImplementedError
@@ -158,48 +187,23 @@ class Bishop(Piece):
 		x = self.position['x']
 		y = self.position['y']
 
+		# If neighboring up-right is within bounds travel as far as possible in that direction
 		if self.checkBounds({'x': x + 1, 'y': y + 1}):
 			possibleUpRightMoves = self.linearTraversal({'x': x + 1, 'y': y + 1}, 1, 1, 0)
 
+		# If neighboring down-right is within bounds travel as far as possible in that direction
 		if self.checkBounds({'x': x + 1, 'y': y - 1}):
 			possibleDownRightMoves = self.linearTraversal({'x': x + 1, 'y': y - 1}, 1, -1, 0)
 		
+		# If neighboring down-left is within bounds travel as far as possible in that direction
 		if self.checkBounds({'x': x - 1, 'y': y - 1}):
 			possibleDownLeftMoves = self.linearTraversal({'x': x - 1, 'y': y - 1}, -1, -1, 0)
 		
+		# If neighboring up-left is within bounds travel as far as possible in that direction
 		if self.checkBounds({'x': x - 1, 'y': y + 1}):
 			possibleUpLeftMoves = self.linearTraversal({'x': x - 1, 'y': y + 1}, -1, 1, 0)
 
 		possibleMoves = possibleUpRightMoves + possibleDownRightMoves + possibleDownLeftMoves + possibleUpLeftMoves
-
-		return possibleMoves
-
-	# Recursively traverses board in a straight line until it reaches the end.
-	# dX & dY controls change in location per recursion.
-	# level shows how deep into recursion the program is.
-	def linearTraversal(self, position, dX, dY, level):
-		nextPos = {'x': position['x'] + dX, 'y': position['y'] + dY}
-		possibleMoves = []
-
-		# Check if next position is within bounds
-		if self.checkBounds(nextPos): 
-			if chessboard.getPos(nextPos) is None:
-				level += 1
-				possibleMoves = self.linearTraversal(nextPos, dX, dY, level)
-				possibleMoves.append(position)
-			# Possible capture, account for potential enemy space and end recursive chain
-			elif chessboard.getPos(nextPos).color != chessboard.playerColor:
-				possibleMoves.append(nextPos)
-				possibleMoves.append(position)
-				return possibleMoves
-			# Collision with friendly piece, end recursive chain immediately
-			else:
-				possibleMoves.append(position)
-				return possibleMoves
-		else:
-			# Collion with board boundary, end recursive chain
-			possibleMoves.append(position)
-			return possibleMoves
 
 		return possibleMoves
 
