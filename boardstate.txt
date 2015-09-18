@@ -1,3 +1,3 @@
 white
-white,bishop,e:5
-black,pawn,g:4
+white,rook,d:4
+white,pawn,f:4
