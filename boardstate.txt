@@ -1,3 +1,2 @@
 white
-white,rook,d:4
-white,pawn,f:4
+white,queen,d:4

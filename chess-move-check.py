@@ -59,7 +59,7 @@ class Piece:
 			return False
 		return True
 
-	# Recursively traverses board in a straight line until it reaches the end.
+	# Recursively traverses board in a straight line until it reaches a collision.
 	# dX & dY controls change in location per recursion.
 	def linearTraversal(self, position, dX, dY):
 		nextPos = {'x': position['x'] + dX, 'y': position['y'] + dY}
@@ -242,11 +242,49 @@ class Rook(Piece):
 ### Queen Class which inherits from Piece ###
 class Queen(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
-	def calcMoves(self, playerColor, board):
-		print 'hurray'
-		print playerColor
-		self.printPiece()
-		print board
+	def calcMoves(self, chessboard):
+		possibleMoves = [] # List of possible moves to return
+
+		# Makes code below easier to read
+		x = self.position['x']
+		y = self.position['y']
+
+		# If neighboring up-right position is within bounds travel as far as possible in that direction
+		if self.checkBounds({'x': x + 1, 'y': y + 1}):
+			possibleUpRightMoves = self.linearTraversal({'x': x + 1, 'y': y + 1}, 1, 1)
+
+		# If neighboring down-right position is within bounds travel as far as possible in that direction
+		if self.checkBounds({'x': x + 1, 'y': y - 1}):
+			possibleDownRightMoves = self.linearTraversal({'x': x + 1, 'y': y - 1}, 1, -1)
+		
+		# If neighboring down-left position is within bounds travel as far as possible in that direction
+		if self.checkBounds({'x': x - 1, 'y': y - 1}):
+			possibleDownLeftMoves = self.linearTraversal({'x': x - 1, 'y': y - 1}, -1, -1)
+		
+		# If neighboring up-left position is within bounds travel as far as possible in that direction
+		if self.checkBounds({'x': x - 1, 'y': y + 1}):
+			possibleUpLeftMoves = self.linearTraversal({'x': x - 1, 'y': y + 1}, -1, 1)
+
+		# If neighboring up position is within bounds travel as far as possible in that direction
+		if self.checkBounds({'x': x, 'y': y + 1}):
+			possibleUpMoves = self.linearTraversal({'x': x, 'y': y + 1}, 0, 1)
+
+		# If neighboring right position is within bounds travel as far as possible in that direction
+		if self.checkBounds({'x': x + 1, 'y': y}):
+			possibleRightMoves = self.linearTraversal({'x': x + 1, 'y': y}, 1, 0)
+		
+		# If neighboring down position is within bounds travel as far as possible in that direction
+		if self.checkBounds({'x': x, 'y': y - 1}):
+			possibleDownMoves = self.linearTraversal({'x': x, 'y': y - 1}, 0, -1)
+		
+		# If neighboring left position is within bounds travel as far as possible in that direction
+		if self.checkBounds({'x': x - 1, 'y': y}):
+			possibleLeftMoves = self.linearTraversal({'x': x - 1, 'y': y}, -1, 0)
+
+		# Combine all the lists together into possibleMoves list
+		possibleMoves = possibleUpRightMoves + possibleDownRightMoves + possibleDownLeftMoves + possibleUpLeftMoves + possibleUpMoves + possibleRightMoves + possibleDownMoves + possibleLeftMoves
+
+		return possibleMoves
 
 
 ### Knight Class which inherits from Piece ###
