@@ -240,7 +240,18 @@ class Chessboard:
 					print currName + ' at ' + formatChess(currPos) + ' can move to ' + formatChess(possibleMove)
 					moveCount += 1
 
-		print str(moveCount) + ' legal moves (' + str(pieceCount) + ' unique pieces) for ' + self.playerColor.lower() + ' player'
+		# Pluralizes words (There you go grammar freaks jeeeez)
+		moveWord = 'moves'
+		pieceWord = 'pieces'
+
+		if moveCount == 1:
+			moveWord = 'move'
+
+		if pieceCount == 1:
+			pieceWord = 'piece'
+
+		# Print summary statement
+		print str(moveCount) + ' legal ' + moveWord + ' (' + str(pieceCount) + ' unique ' + pieceWord + ') for ' + self.playerColor.lower() + ' player'
 
 	# Show what is at position (x,y) on the board
 	def getPos(self, position):
