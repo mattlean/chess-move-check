@@ -14,8 +14,8 @@ CHARMAP = {
 	'H': 7
 }
 COLORSET = set(['black', 'white']) # Used for checking if input color is valid
-INDEXMAP = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] # Used for converting from index to chess format
-NAMEARR = ['bishop', 'king', 'knight', 'pawn', 'queen', 'rook'] # Used for checking if input piece name is valid
+INDEXARR = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] # Used for converting from index to chess format
+NAMEARR = ['bishop', 'king', 'knight', 'pawn', 'queen', 'rook'] # Used for checking the appropriate piece name
 
 ### Utility Functions ###
 # Validates attribute with set. Returns normalized attribute on success.
@@ -42,7 +42,7 @@ def formatIndex(position):
 
 # Converts input position from list index format (ex. 1,2) to chess format (ex. B:3)
 def formatChess(position):
-	return {'x': INDEXMAP[position['x']], 'y': str(position['y'] + 1)}
+	return {'x': INDEXARR[position['x']], 'y': str(position['y'] + 1)}
 
 
 ### Parent class for all piece types ###
@@ -52,6 +52,12 @@ class Piece:
 		self.color = validAttr(color, COLORSET)
 		self.name = validAttr(name, NAMEARR)
 		self.position = formatIndex(position)
+
+	# Checks if input position (must be in index format) is within the bounds of the board
+	def checkBounds(self, x, y):
+		if x < 0 or x >= BOARD_SIZE or y < 0 or y >= BOARD_SIZE:
+			return False
+		return True
 
 	# Implementation for move validation. Changes depending on piece type.
 	def calcMoves(self, board):
@@ -67,9 +73,46 @@ class Piece:
 class King(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, playerColor, board):
-		print 'hurray'
-		print playerColor
-		print board
+		possibleMoves = [] # List of possible moves to return
+
+		# Makes code below easier to read
+		x = self.position['x']
+		y = self.position['y']
+
+		# Move up
+		if self.checkBounds(x, y + 1):
+			possibleMoves.append({'x': x, 'y': y + 1})
+		
+		# Move up-right
+		if self.checkBounds(x + 1, y + 1):
+			possibleMoves.append({'x': x + 1, 'y': y + 1})
+
+		# Move right
+		if self.checkBounds(x + 1, y):
+			possibleMoves.append({'x': x + 1, 'y': y})
+
+		# Move down-right
+		if self.checkBounds(x + 1, y - 1):
+			possibleMoves.append({'x': x + 1, 'y': y - 1})
+
+		# Move down
+		if self.checkBounds(x, y - 1):
+			possibleMoves.append({'x': x, 'y': y - 1})
+
+		# Move down-left
+		if self.checkBounds(x - 1, y - 1):
+			possibleMoves.append({'x': x - 1, 'y': y - 1})
+
+		# Move left
+		if self.checkBounds(x - 1, y):
+			possibleMoves.append({'x': x - 1, 'y': y})
+
+		# Move up-left
+		if self.checkBounds(x - 1, y + 1):
+			possibleMoves.append({'x': x - 1, 'y': y + 1})
+
+		print possibleMoves
+		return possibleMoves
 
 
 ### Pawn Class which inherits from Piece ###
@@ -77,6 +120,9 @@ class Pawn(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, playerColor, board):
 		print 'hurray'
+		print playerColor
+		self.printPiece()
+		print board
 
 
 ### Rook Class which inherits from Piece ###
@@ -84,6 +130,9 @@ class Rook(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, playerColor, board):
 		print 'hurray'
+		print playerColor
+		self.printPiece()
+		print board
 
 
 ### Bishop Class which inherits from Piece ###
@@ -91,6 +140,9 @@ class Bishop(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, playerColor, board):
 		print 'hurray'
+		print playerColor
+		self.printPiece()
+		print board
 
 
 ### Queen Class which inherits from Piece ###
@@ -98,6 +150,9 @@ class Queen(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, playerColor, board):
 		print 'hurray'
+		print playerColor
+		self.printPiece()
+		print board
 
 
 ### Knight Class which inherits from Piece ###
@@ -105,6 +160,9 @@ class Knight(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, playerColor, board):
 		print 'hurray'
+		print playerColor
+		self.printPiece()
+		print board
 
 
 ### Chessboard Class ###
@@ -144,7 +202,7 @@ class Chessboard:
 			self.board[newPiece.position['x']][newPiece.position['y']] = newPiece
 			self.pieces.append(newPiece)
 
-	# Show what is at position (x,y)
+	# Show what is at position (x,y) on the board
 	def printPos(self, x, y):
 		if self.board[x][y] is None:
 			print None
@@ -166,10 +224,10 @@ fileBreakdown = inputFile.read().splitlines()
 inputFile.close()
 
 chessboard = Chessboard(validAttr(fileBreakdown[0], COLORSET), fileBreakdown[1:])
-chessboard.printData()
+"""chessboard.printData()
 chessboard.printPos(0,3)
 chessboard.printPos(7,7)
 chessboard.printPos(3,3)
 chessboard.printPos(5,2)
-chessboard.printPos(5,1)
-chessboard.board[3][3].calcMoves(chessboard.playerColor, chessboard.board)
+chessboard.printPos(5,1)"""
+chessboard.board[4][3].calcMoves(chessboard.playerColor, chessboard.board)
