@@ -112,24 +112,21 @@ class Bishop(Piece):
 		x = self.position['x']
 		y = self.position['y']
 
-		# If neighboring up-right position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x + 1, 'y': y + 1}):
-			possibleUpRightMoves = self.linearTraversal({'x': x + 1, 'y': y + 1}, 1, 1)
+		neighbors = [
+			{'dX': 1, 'dY': 1}, # Up-right
+			{'dX': 1, 'dY': -1}, # Down-right
+			{'dX': -1, 'dY': -1}, # Down-left
+			{'dX': -1, 'dY': 1} # Up-left
+		]
 
-		# If neighboring down-right position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x + 1, 'y': y - 1}):
-			possibleDownRightMoves = self.linearTraversal({'x': x + 1, 'y': y - 1}, 1, -1)
-
-		# If neighboring down-left position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x - 1, 'y': y - 1}):
-			possibleDownLeftMoves = self.linearTraversal({'x': x - 1, 'y': y - 1}, -1, -1)
-
-		# If neighboring up-left position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x - 1, 'y': y + 1}):
-			possibleUpLeftMoves = self.linearTraversal({'x': x - 1, 'y': y + 1}, -1, 1)
-
-		# Combine all the lists together into possibleMoves list
-		possibleMoves = possibleUpRightMoves + possibleDownRightMoves + possibleDownLeftMoves + possibleUpLeftMoves
+		# If neighboring position is within bounds travel as far as possible in that direction
+		for neighbor in neighbors:
+			posState = chessboard.getPosState({'x': x + neighbor['dX'], 'y': y + neighbor['dY']}) # state of position on board
+			if posState == 'Open':
+				newPossibleMoves = self.linearTraversal({'x': x + neighbor['dX'], 'y': y + neighbor['dY']}, neighbor['dX'], neighbor['dY'])
+				possibleMoves += newPossibleMoves
+			elif posState == 'Enemy':
+				possibleMoves.append(neighbor)
 
 		return possibleMoves
 
@@ -378,20 +375,23 @@ class Chessboard:
 			return False
 		return True
 
-	# Show what is at position (x,y) on the board
+	# Gets piece at position (x,y) on board
 	def getPos(self, position):
 		if self.board[position['x']][position['y']] is None:
 			return None
 		return self.board[position['x']][position['y']]
 
-	# Returns true if the position is open or has an enemy piece on it. False otherwise.
-	def checkPos(self, position):
+	# Gets state of position (x,y) on board
+	def getPosState(self, position):
 		if self.checkBounds(position):
 			if self.getPos(position) is None:
-				return True
+				return 'Open'
 			elif self.getPos(position).color != self.playerColor:
-				return True
-		return False
+				return 'Enemy'
+			else:
+				return 'Friendly'
+		else:
+			return 'Out-of-Bounds'
 
 	# Prints all possible legal moves for current player
 	def printLegalMoves(self):

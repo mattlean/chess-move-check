@@ -1,0 +1,6 @@
+black
+black,queen,d:4
+white,pawn,e:4
+black,rook,d:3
+white,knight,b:4
+black,king,d:6
