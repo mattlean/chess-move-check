@@ -68,7 +68,7 @@ class Piece:
 		possibleMoves = []
 
 		# Check if next position is within bounds
-		if chessboard.checkBounds(nextPos): 
+		if chessboard.checkBounds(nextPos):
 			if chessboard.getPos(nextPos) is None:
 				possibleMoves = self.linearTraversal(nextPos, dX, dY)
 				possibleMoves.append(position)
@@ -119,11 +119,11 @@ class Bishop(Piece):
 		# If neighboring down-right position is within bounds travel as far as possible in that direction
 		if chessboard.checkPos({'x': x + 1, 'y': y - 1}):
 			possibleDownRightMoves = self.linearTraversal({'x': x + 1, 'y': y - 1}, 1, -1)
-		
+
 		# If neighboring down-left position is within bounds travel as far as possible in that direction
 		if chessboard.checkPos({'x': x - 1, 'y': y - 1}):
 			possibleDownLeftMoves = self.linearTraversal({'x': x - 1, 'y': y - 1}, -1, -1)
-		
+
 		# If neighboring up-left position is within bounds travel as far as possible in that direction
 		if chessboard.checkPos({'x': x - 1, 'y': y + 1}):
 			possibleUpLeftMoves = self.linearTraversal({'x': x - 1, 'y': y + 1}, -1, 1)
@@ -219,7 +219,7 @@ class Pawn(Piece):
 		if chessboard.checkBounds(oneAheadPos):
 			if chessboard.getPos(oneAheadPos) is None:
 				possibleMoves.append(oneAheadPos)
-			
+
 				# If pawn is in start position and isn't being blocked it can move 2 squares
 				if (chessboard.playerColor == 'White' and y == 1) or (chessboard.playerColor == 'Black' and y == 6):
 					twoAheadPos = {'x': x, 'y': y + (2 * direction)}
@@ -268,11 +268,11 @@ class Queen(Piece):
 		# If neighboring down-right position is within bounds travel as far as possible in that direction
 		if chessboard.checkPos({'x': x + 1, 'y': y - 1}):
 			possibleDownRightMoves = self.linearTraversal({'x': x + 1, 'y': y - 1}, 1, -1)
-		
+
 		# If neighboring down-left position is within bounds travel as far as possible in that direction
 		if chessboard.checkPos({'x': x - 1, 'y': y - 1}):
 			possibleDownLeftMoves = self.linearTraversal({'x': x - 1, 'y': y - 1}, -1, -1)
-		
+
 		# If neighboring up-left position is within bounds travel as far as possible in that direction
 		if chessboard.checkPos({'x': x - 1, 'y': y + 1}):
 			possibleUpLeftMoves = self.linearTraversal({'x': x - 1, 'y': y + 1}, -1, 1)
@@ -284,11 +284,11 @@ class Queen(Piece):
 		# If neighboring right position is within bounds travel as far as possible in that direction
 		if chessboard.checkPos({'x': x + 1, 'y': y}):
 			possibleRightMoves = self.linearTraversal({'x': x + 1, 'y': y}, 1, 0)
-		
+
 		# If neighboring down position is within bounds travel as far as possible in that direction
 		if chessboard.checkPos({'x': x, 'y': y - 1}):
 			possibleDownMoves = self.linearTraversal({'x': x, 'y': y - 1}, 0, -1)
-		
+
 		# If neighboring left position is within bounds travel as far as possible in that direction
 		if chessboard.checkPos({'x': x - 1, 'y': y}):
 			possibleLeftMoves = self.linearTraversal({'x': x - 1, 'y': y}, -1, 0)
@@ -320,11 +320,11 @@ class Rook(Piece):
 		# If neighboring right position is within bounds travel as far as possible in that direction
 		if chessboard.checkPos({'x': x + 1, 'y': y}):
 			possibleRightMoves = self.linearTraversal({'x': x + 1, 'y': y}, 1, 0)
-		
+
 		# If neighboring down position is within bounds travel as far as possible in that direction
 		if chessboard.checkPos({'x': x, 'y': y - 1}):
 			possibleDownMoves = self.linearTraversal({'x': x, 'y': y - 1}, 0, -1)
-		
+
 		# If neighboring left position is within bounds travel as far as possible in that direction
 		if chessboard.checkPos({'x': x - 1, 'y': y}):
 			possibleLeftMoves = self.linearTraversal({'x': x - 1, 'y': y}, -1, 0)
@@ -368,7 +368,7 @@ class Chessboard:
 				newPiece = Queen(splitData[0], splitData[1], splitData[2], self)
 			elif validAttr(splitData[1], NAMEARR) == NAMEARR[5]:
 				newPiece = Rook(splitData[0], splitData[1], splitData[2], self)
-			
+
 			self.board[newPiece.position['x']][newPiece.position['y']] = newPiece
 			self.pieces.append(newPiece)
 
@@ -409,7 +409,7 @@ class Chessboard:
 				currPos = piece.position
 				possibleMoves = piece.calcMoves()
 				pieceCount += 1
-			
+
 				if possibleMoves:
 					for possibleMove in possibleMoves:
 						print currName + ' at ' + formatChess(currPos) + ' can move to ' + formatChess(possibleMove)
@@ -443,7 +443,7 @@ Usage:	python chess-move-check.py <board-state-txt>
 Info:	The script takes in a text file that determines the state of the chessboard.
 		The first line of the text file should be the current turn's player color.
 		Each line in the rest of the file represent a piece in this format:
-			
+
 			Color,Piece Name,Location
 
 		One example of this is:
