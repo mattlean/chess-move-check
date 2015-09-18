@@ -1,0 +1,2 @@
+white
+white,bishop,d:5

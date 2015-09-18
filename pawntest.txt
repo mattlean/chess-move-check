@@ -1,0 +1,5 @@
+white
+white,pawn,c:6
+black,rook,b:7
+black,rook,d:7
+white,pawn,e:2

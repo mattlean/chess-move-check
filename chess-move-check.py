@@ -388,13 +388,8 @@ class Chessboard:
 	def checkPos(self, position):
 		if self.checkBounds(position):
 			if self.getPos(position) is None:
-				print 'nothin here'
 				return True
 			elif self.getPos(position).color != self.playerColor:
-				print position
-				print self.getPos(position)
-				print self.getPos(position).color
-				print 'enemy here'
 				return True
 		return False
 
