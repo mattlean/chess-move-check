@@ -13,14 +13,14 @@ CHARMAP = {
 	'G': 6,
 	'H': 7
 }
-COLORSET = set(['black', 'white']) # Used for checking if input color is valid
+COLORSET = set(['Black', 'White']) # Used for checking if input color is valid
 INDEXARR = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] # Used for converting from index to chess format
-NAMEARR = ['bishop', 'king', 'knight', 'pawn', 'queen', 'rook'] # Used for checking the appropriate piece name
+NAMEARR = ['Bishop', 'King', 'Knight', 'Pawn', 'Queen', 'Rook'] # Used for checking the appropriate piece name
 
 ### Utility Functions ###
 # Validates attribute with set. Returns normalized attribute on success.
 def validAttr(attr, checkSet):
-	normalAttr = attr.lower()
+	normalAttr = attr.lower().capitalize()
 
 	if normalAttr in checkSet:
 		return normalAttr
@@ -42,7 +42,7 @@ def formatIndex(position):
 
 # Converts input position from list index format (ex. 1,2) to chess format (ex. B:3)
 def formatChess(position):
-	return {'x': INDEXARR[position['x']], 'y': str(position['y'] + 1)}
+	return '<' + INDEXARR[position['x']] + ':' + str(position['y'] + 1) + '>'
 
 
 ### Parent class for all piece types ###
@@ -65,8 +65,8 @@ class Piece:
 
 	# Prints out piece info (Color, Name, Position)
 	def printPiece(self):
-		chessStylePos = formatChess(self.position)
-		print self.color.capitalize() + ', ' + self.name.capitalize() + ', <' + chessStylePos['x'] + ':' + chessStylePos['y'] + '>'
+		position = formatChess(self.position)
+		print self.color.capitalize() + ', ' + self.name.capitalize() + ', ' + position
 
 
 ### King Class which inherits from Piece ###
@@ -111,7 +111,6 @@ class King(Piece):
 		if self.checkBounds(x - 1, y + 1):
 			possibleMoves.append({'x': x - 1, 'y': y + 1})
 
-		print possibleMoves
 		return possibleMoves
 
 
@@ -202,6 +201,15 @@ class Chessboard:
 			self.board[newPiece.position['x']][newPiece.position['y']] = newPiece
 			self.pieces.append(newPiece)
 
+	def printLegalMoves(self):
+		#iterate through each piece and do the following
+		currName = chessboard.pieces[0].name
+		currPos = chessboard.pieces[0].position
+		possibleMoves = chessboard.pieces[0].calcMoves(chessboard.playerColor, chessboard.board)
+		
+		for possibleMove in possibleMoves:
+			print currName + ' at ' + formatChess(currPos) + ' can move to ' + formatChess(possibleMove)
+
 	# Show what is at position (x,y) on the board
 	def printPos(self, x, y):
 		if self.board[x][y] is None:
@@ -224,10 +232,10 @@ fileBreakdown = inputFile.read().splitlines()
 inputFile.close()
 
 chessboard = Chessboard(validAttr(fileBreakdown[0], COLORSET), fileBreakdown[1:])
+chessboard.printLegalMoves()
 """chessboard.printData()
 chessboard.printPos(0,3)
 chessboard.printPos(7,7)
 chessboard.printPos(3,3)
 chessboard.printPos(5,2)
 chessboard.printPos(5,1)"""
-chessboard.board[4][3].calcMoves(chessboard.playerColor, chessboard.board)
