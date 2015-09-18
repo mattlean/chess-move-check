@@ -1,0 +1,7 @@
+BlAcK
+bLaCk,KiNg,e:4
+white,PAwn,D:4
+BLACK,RoOk,F:3
+white,queen,E:6
+black,BIsHop,a:2
+white,knight,h:3
