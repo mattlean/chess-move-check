@@ -3,7 +3,7 @@ BOARD_SIZE = 8
 # Parent class for all piece types
 class Piece:
 	# Used for converting from chess to index format
-	_charMap = {
+	_CHARMAP = {
 		'A': 0,
 		'B': 1,
 		'C': 2,
@@ -14,14 +14,29 @@ class Piece:
 		'H': 7
 	}
 
-	# Used for converting from index to chess format
-	_indexMap = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+	# Used for checking if input color is valid
+	_COLORSET = set(['black', 'white'])
 
+	# Used for converting from index to chess format
+	_INDEXMAP = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+
+	# Used for checking if input piece name is valid
+	_NAMESET = set(['bishop', 'king', 'knight', 'pawn', 'queen', 'rook'])
+
+	# Constructor
 	def __init__(self, color, name, position):
-		# Initialize and normalize values
-		self.color = color.lower().capitalize()
-		self.name = name.lower().capitalize()
+		self.color = self._validAttr(color, Piece._COLORSET)
+		self.name = self._validAttr(name, Piece._NAMESET)
 		self.position = self.indexFormat(position)
+
+	# Validates attribute with set. Returns normalized attribute on success.
+	def _validAttr(self, attr, checkSet):
+		normalAttr = attr.lower()
+
+		if normalAttr in checkSet:
+			return normalAttr
+
+		raise Exception('You input an invalid color or piece name!')
 
 	# Implementation for move validation. Changes depending on piece type.
 	def _moveCalc(self, board):
@@ -36,25 +51,30 @@ class Piece:
 		splitPos = position.split(':')
 		charCoord = splitPos[0].capitalize()
 
-		if charCoord in Piece._charMap:
-			if int(splitPos[1]) < 1 or int(splitPos[1]) > BOARD_SIZE:
-				raise Exception('You input a piece with an invalid Y coordinate!')
-
-			return {'x': Piece._charMap[charCoord], 'y': int(splitPos[1]) - 1}
-		else:
+		if charCoord not in Piece._CHARMAP:
 			raise Exception('You input a piece with an invalid X coordinate!')
+
+		if int(splitPos[1]) < 1 or int(splitPos[1]) > BOARD_SIZE:
+			raise Exception('You input a piece with an invalid Y coordinate!')
+
+		return {'x': Piece._CHARMAP[charCoord], 'y': int(splitPos[1]) - 1}
 
 	# Converts input position from list index format (ex. 1,2) to chess format (ex. B:3)
 	def chessFormat(self, position):
-		return {'x': Piece._indexMap[position['x']], 'y': str(position['y'] + 1)}
+		return {'x': Piece._INDEXMAP[position['x']], 'y': str(position['y'] + 1)}
 
+	# Prints out piece info (Color, Name, Position)
 	def printPiece(self):
-		print self.name + ', <' + str(self.position['x']) + ':' + str(self.position['y']) + '>, ' + self.color
+		print self.color.capitalize() + ', ' + self.name.capitalize() + ', <' + str(self.position['x']) + ':' + str(self.position['y']) + '>'
 
 class Chessboard:
-	def __init__(self):
+	def __init__(self, *args):
 		# Initialize board
 		self.board = []
+		self.pieces = []
+
+		for arg in args[1:]:
+			print arg
 
 		for x in range(BOARD_SIZE):
 			self.board.append([])
@@ -62,9 +82,9 @@ class Chessboard:
 				self.board[x].append(None)
 
 # main()
-chessboard = Chessboard()
+chessboard = Chessboard('var', 'meh', 'urmum')
 
-piece = Piece('Black', 'Knight', 'D:8')
+piece = Piece('bLaCk', 'KiNg', 'H:8')
 piece.printPiece()
 
 chessPos = piece.chessFormat(piece.position)
