@@ -161,22 +161,29 @@ class Rook(Piece):
 
 	# Recursively traverses board until it reaches the end
 	def recursiveTraversal(self, position):
-		x = position['x']
-		y = position['y']
-		count = 1
+		nextPos = {'x': position['x'] + 1, 'y': position['y'] + 1}
+		possibleMoves = []
 
-		print 'Currently on: (' + str(x) + ',' + str(y) + ')'
-
-		x += 1
-		y += 1
-
-		if self.checkBounds({'x': x, 'y': y}):
-			count += self.recursiveTraversal({'x': x, 'y': y})
+		# Check if next position is within bounds
+		if self.checkBounds(nextPos): 
+			if chessboard.getPos(nextPos) is None:
+				possibleMoves = self.recursiveTraversal(nextPos)
+				possibleMoves.append(position)
+			# Possible capture, account for potential enemy space and end recursive chain
+			elif chessboard.getPos(nextPos).color != chessboard.playerColor:
+				possibleMoves.append(nextPos)
+				possibleMoves.append(position)
+				return possibleMoves
+			# Collision with friendly piece, end recursive chain
+			else:
+				possibleMoves.append(position)
+				return possibleMoves
 		else:
-			return 0
+			# Collion with board boundary, end recursive chain
+			possibleMoves.append(position)
+			return possibleMoves
 
-		print 'Exiting: (' + str(x) + ',' + str(y) + ')'
-		return count
+		return possibleMoves
 
 
 ### Bishop Class which inherits from Piece ###

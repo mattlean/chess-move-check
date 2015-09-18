@@ -1,2 +1,4 @@
 white
 white,rook,a:1
+black,pawn,e:6
+white,pawn,e:5
