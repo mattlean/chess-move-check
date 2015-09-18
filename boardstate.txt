@@ -1,2 +1,3 @@
 white
-white,queen,d:4
+white,knight,d:4
+white,pawn,b:5

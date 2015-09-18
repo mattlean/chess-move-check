@@ -59,7 +59,7 @@ class Piece:
 			return False
 		return True
 
-	# Recursively traverses board in a straight line until it reaches a collision.
+	# Recursively traverses board with a linear pattern until it reaches a collision.
 	# dX & dY controls change in location per recursion.
 	def linearTraversal(self, position, dX, dY):
 		nextPos = {'x': position['x'] + dX, 'y': position['y'] + dY}
@@ -290,11 +290,34 @@ class Queen(Piece):
 ### Knight Class which inherits from Piece ###
 class Knight(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
-	def calcMoves(self, playerColor, board):
-		print 'hurray'
-		print playerColor
-		self.printPiece()
-		print board
+	def calcMoves(self, chessboard):
+		possibleMoves = [] # List of possible moves to return
+
+		# Makes code below easier to read
+		x = self.position['x']
+		y = self.position['y']
+
+		# Knight movement options
+		moveOptions = [
+			{'x': x + 1, 'y': y + 2}, # Up-right L
+			{'x': x + 2, 'y': y + 1}, # Right-up L
+			{'x': x + 2, 'y': y - 1}, # Right-down L
+			{'x': x + 1, 'y': y - 2}, # Down-right L
+			{'x': x - 1, 'y': y - 2}, # Down-left L
+			{'x': x - 2, 'y': y - 1}, # Left-down L
+			{'x': x - 2, 'y': y + 1}, # Left-up L
+			{'x': x - 1, 'y': y + 2}, # Up-left L
+		]
+
+		# Calculate valid moves
+		for option in moveOptions:
+			if self.checkBounds(option): # Knight can only move within board size
+				if chessboard.getPos(option) is None: # Knight can move to empty position
+					possibleMoves.append(option)
+				elif chessboard.getPos(option).color != chessboard.playerColor: # Knight can capture
+					possibleMoves.append(option)
+
+		return possibleMoves
 
 
 ### Chessboard Class ###
