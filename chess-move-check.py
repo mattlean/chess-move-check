@@ -152,22 +152,25 @@ class Pawn(Piece):
 class Rook(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, chessboard):
+		possibleMoves = [] # List of possible moves to return
+
 		# Makes code below easier to read
 		x = self.position['x']
 		y = self.position['y']
 
 		print 'Start Pos: ' + '(' + str(self.position['x']) + ',' + str(self.position['y']) + ')'
-		print self.recursiveTraversal({'x': x, 'y': y})
+		print self.linearTraversal({'x': x, 'y': y}, 1, 1)
 
-	# Recursively traverses board until it reaches the end
-	def recursiveTraversal(self, position):
-		nextPos = {'x': position['x'] + 1, 'y': position['y'] + 1}
+	# Recursively traverses board in a straight line until it reaches the end.
+	# dX & dY controls change in location per recursion.
+	def linearTraversal(self, position, dX, dY):
+		nextPos = {'x': position['x'] + dX, 'y': position['y'] + dY}
 		possibleMoves = []
 
 		# Check if next position is within bounds
 		if self.checkBounds(nextPos): 
 			if chessboard.getPos(nextPos) is None:
-				possibleMoves = self.recursiveTraversal(nextPos)
+				possibleMoves = self.linearTraversal(nextPos, dX, dY)
 				possibleMoves.append(position)
 			# Possible capture, account for potential enemy space and end recursive chain
 			elif chessboard.getPos(nextPos).color != chessboard.playerColor:
