@@ -125,7 +125,7 @@ class Pawn(Piece):
 			if chessboard.getPos(oneAheadPos) is None:
 				possibleMoves.append(oneAheadPos)
 			
-				# If pawn is in start position, check if can move 2 squares
+				# If pawn is in start position and isn't being blocked it can move 2 squares
 				if (chessboard.playerColor == 'White' and y == 1) or (chessboard.playerColor == 'Black' and y == 6):
 					twoAheadPos = {'x': x, 'y': y + (2 * direction)}
 
@@ -142,7 +142,7 @@ class Pawn(Piece):
 		for option in captureOptions:
 			if self.checkBounds(option):
 				if chessboard.getPos(option) is not None:
-					if chessboard.getPos(option).color != chessboard.playerColor:
+					if chessboard.getPos(option).color != chessboard.playerColor: # Pawn can only move diagonally if it can capture
 						possibleMoves.append(option)
 
 		return possibleMoves
@@ -158,26 +158,38 @@ class Rook(Piece):
 		x = self.position['x']
 		y = self.position['y']
 
-		print 'Start Pos: ' + '(' + str(self.position['x']) + ',' + str(self.position['y']) + ')'
-		print self.linearTraversal({'x': x, 'y': y}, 1, 1)
+		possibleUpRightMoves = self.linearTraversal({'x': x + 1, 'y': y + 1}, 1, 1, 0)
+		possibleDownRightMoves = self.linearTraversal({'x': x + 1, 'y': y - 1}, 1, -1, 0)
+		possibleDownLeftMoves = self.linearTraversal({'x': x - 1, 'y': y - 1}, -1, -1, 0)
+		possibleUpLeftMoves = self.linearTraversal({'x': x - 1, 'y': y + 1}, -1, 1, 0)
+
+		possibleMoves = possibleUpRightMoves + possibleDownRightMoves + possibleDownLeftMoves + possibleUpLeftMoves;
+		#possibleMoves = possibleDownRightMoves
+
+		return possibleMoves
 
 	# Recursively traverses board in a straight line until it reaches the end.
 	# dX & dY controls change in location per recursion.
-	def linearTraversal(self, position, dX, dY):
+	# level shows how deep into recursion the program is.
+	def linearTraversal(self, position, dX, dY, level):
 		nextPos = {'x': position['x'] + dX, 'y': position['y'] + dY}
 		possibleMoves = []
+
+		if self.checkBounds(position) is False:
+			return possibleMoves
 
 		# Check if next position is within bounds
 		if self.checkBounds(nextPos): 
 			if chessboard.getPos(nextPos) is None:
-				possibleMoves = self.linearTraversal(nextPos, dX, dY)
+				level += 1
+				possibleMoves = self.linearTraversal(nextPos, dX, dY, level)
 				possibleMoves.append(position)
 			# Possible capture, account for potential enemy space and end recursive chain
 			elif chessboard.getPos(nextPos).color != chessboard.playerColor:
 				possibleMoves.append(nextPos)
 				possibleMoves.append(position)
 				return possibleMoves
-			# Collision with friendly piece, end recursive chain
+			# Collision with friendly piece, end recursive chain immediately
 			else:
 				possibleMoves.append(position)
 				return possibleMoves
