@@ -56,16 +56,10 @@ def formatChess(position):
 ### PIECE CLASS: Parent for all piece types ###
 class Piece:
 	# Constructor
-	def __init__(self, color, name, position):
+	def __init__(self, color, name, position, chessboard):
 		self.color = validAttr(color, COLORSET)
 		self.name = validAttr(name, NAMEARR)
 		self.position = formatIndex(position)
-
-	# Checks if input position (must be in index format) is within the bounds of the board
-	def checkBounds(self, position):
-		if position['x'] < 0 or position['x'] >= BOARD_SIZE or position['y'] < 0 or position['y'] >= BOARD_SIZE:
-			return False
-		return True
 
 	# Recursively traverses board with a linear pattern until it reaches a collision.
 	# dX & dY controls change in location per recursion.
@@ -74,7 +68,7 @@ class Piece:
 		possibleMoves = []
 
 		# Check if next position is within bounds
-		if self.checkBounds(nextPos): 
+		if chessboard.checkBounds(nextPos): 
 			if chessboard.getPos(nextPos) is None:
 				possibleMoves = self.linearTraversal(nextPos, dX, dY)
 				possibleMoves.append(position)
@@ -106,27 +100,32 @@ class Piece:
 ### BISHOP CLASS ###
 class Bishop(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
-	def calcMoves(self, chessboard):
+	def calcMoves(self):
 		possibleMoves = [] # List of possible moves to return
+		# Possible moves in specific direction away from origin
+		possibleUpRightMoves = []
+		possibleDownRightMoves = []
+		possibleDownLeftMoves = []
+		possibleUpLeftMoves = []
 
 		# Makes code below easier to read
 		x = self.position['x']
 		y = self.position['y']
 
 		# If neighboring up-right position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x + 1, 'y': y + 1}):
+		if chessboard.checkPos({'x': x + 1, 'y': y + 1}):
 			possibleUpRightMoves = self.linearTraversal({'x': x + 1, 'y': y + 1}, 1, 1)
 
 		# If neighboring down-right position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x + 1, 'y': y - 1}):
+		if chessboard.checkPos({'x': x + 1, 'y': y - 1}):
 			possibleDownRightMoves = self.linearTraversal({'x': x + 1, 'y': y - 1}, 1, -1)
 		
 		# If neighboring down-left position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x - 1, 'y': y - 1}):
+		if chessboard.checkPos({'x': x - 1, 'y': y - 1}):
 			possibleDownLeftMoves = self.linearTraversal({'x': x - 1, 'y': y - 1}, -1, -1)
 		
 		# If neighboring up-left position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x - 1, 'y': y + 1}):
+		if chessboard.checkPos({'x': x - 1, 'y': y + 1}):
 			possibleUpLeftMoves = self.linearTraversal({'x': x - 1, 'y': y + 1}, -1, 1)
 
 		# Combine all the lists together into possibleMoves list
@@ -137,7 +136,7 @@ class Bishop(Piece):
 ### KING CLASS ###
 class King(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
-	def calcMoves(self, chessboard):
+	def calcMoves(self):
 		possibleMoves = [] # List of possible moves to return
 
 		# Makes code below easier to read
@@ -158,7 +157,7 @@ class King(Piece):
 
 		# Calculate valid moves
 		for option in moveOptions:
-			if self.checkBounds(option): # King can only move within board size
+			if chessboard.checkBounds(option): # King can only move within board size
 				if chessboard.getPos(option) is None: # King can move to empty position
 					possibleMoves.append(option)
 				elif chessboard.getPos(option).color != chessboard.playerColor: # King can capture
@@ -169,7 +168,7 @@ class King(Piece):
 ### KNIGHT CLASS ###
 class Knight(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
-	def calcMoves(self, chessboard):
+	def calcMoves(self):
 		possibleMoves = [] # List of possible moves to return
 
 		# Makes code below easier to read
@@ -190,7 +189,7 @@ class Knight(Piece):
 
 		# Calculate valid moves
 		for option in moveOptions:
-			if self.checkBounds(option): # Knight can only move within board size
+			if chessboard.checkBounds(option): # Knight can only move within board size
 				if chessboard.getPos(option) is None: # Knight can move to empty position
 					possibleMoves.append(option)
 				elif chessboard.getPos(option).color != chessboard.playerColor: # Knight can capture
@@ -201,7 +200,7 @@ class Knight(Piece):
 ### PAWN CLASS ###
 class Pawn(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
-	def calcMoves(self, chessboard):
+	def calcMoves(self):
 		possibleMoves = [] # List of possible moves to return
 
 		# Makes code below easier to read
@@ -217,7 +216,7 @@ class Pawn(Piece):
 		# Check if pawn can move forward
 		oneAheadPos = {'x': x, 'y': y + (1 * direction)}
 
-		if self.checkBounds(oneAheadPos):
+		if chessboard.checkBounds(oneAheadPos):
 			if chessboard.getPos(oneAheadPos) is None:
 				possibleMoves.append(oneAheadPos)
 			
@@ -225,7 +224,7 @@ class Pawn(Piece):
 				if (chessboard.playerColor == 'White' and y == 1) or (chessboard.playerColor == 'Black' and y == 6):
 					twoAheadPos = {'x': x, 'y': y + (2 * direction)}
 
-					if self.checkBounds(twoAheadPos) and chessboard.getPos(twoAheadPos) is None:
+					if chessboard.checkBounds(twoAheadPos) and chessboard.getPos(twoAheadPos) is None:
 						possibleMoves.append(twoAheadPos)
 
 		# Check if pawn can capture
@@ -236,7 +235,7 @@ class Pawn(Piece):
 
 		# Calculate valid captures
 		for option in captureOptions:
-			if self.checkBounds(option):
+			if chessboard.checkBounds(option):
 				if chessboard.getPos(option) is not None:
 					if chessboard.getPos(option).color != chessboard.playerColor: # Pawn can only move diagonally if it can capture
 						possibleMoves.append(option)
@@ -246,43 +245,52 @@ class Pawn(Piece):
 ### QUEEN CLASS ###
 class Queen(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
-	def calcMoves(self, chessboard):
+	def calcMoves(self):
 		possibleMoves = [] # List of possible moves to return
+		# Possible moves in specific direction away from origin
+		possibleUpRightMoves = []
+		possibleDownRightMoves = []
+		possibleDownLeftMoves = []
+		possibleUpLeftMoves = []
+		possibleUpMoves = []
+		possibleRightMoves = []
+		possibleDownMoves = []
+		possibleLeftMoves = []
 
 		# Makes code below easier to read
 		x = self.position['x']
 		y = self.position['y']
 
 		# If neighboring up-right position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x + 1, 'y': y + 1}):
+		if chessboard.checkPos({'x': x + 1, 'y': y + 1}):
 			possibleUpRightMoves = self.linearTraversal({'x': x + 1, 'y': y + 1}, 1, 1)
 
 		# If neighboring down-right position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x + 1, 'y': y - 1}):
+		if chessboard.checkPos({'x': x + 1, 'y': y - 1}):
 			possibleDownRightMoves = self.linearTraversal({'x': x + 1, 'y': y - 1}, 1, -1)
 		
 		# If neighboring down-left position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x - 1, 'y': y - 1}):
+		if chessboard.checkPos({'x': x - 1, 'y': y - 1}):
 			possibleDownLeftMoves = self.linearTraversal({'x': x - 1, 'y': y - 1}, -1, -1)
 		
 		# If neighboring up-left position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x - 1, 'y': y + 1}):
+		if chessboard.checkPos({'x': x - 1, 'y': y + 1}):
 			possibleUpLeftMoves = self.linearTraversal({'x': x - 1, 'y': y + 1}, -1, 1)
 
 		# If neighboring up position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x, 'y': y + 1}):
+		if chessboard.checkPos({'x': x, 'y': y + 1}):
 			possibleUpMoves = self.linearTraversal({'x': x, 'y': y + 1}, 0, 1)
 
 		# If neighboring right position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x + 1, 'y': y}):
+		if chessboard.checkPos({'x': x + 1, 'y': y}):
 			possibleRightMoves = self.linearTraversal({'x': x + 1, 'y': y}, 1, 0)
 		
 		# If neighboring down position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x, 'y': y - 1}):
+		if chessboard.checkPos({'x': x, 'y': y - 1}):
 			possibleDownMoves = self.linearTraversal({'x': x, 'y': y - 1}, 0, -1)
 		
 		# If neighboring left position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x - 1, 'y': y}):
+		if chessboard.checkPos({'x': x - 1, 'y': y}):
 			possibleLeftMoves = self.linearTraversal({'x': x - 1, 'y': y}, -1, 0)
 
 		# Combine all the lists together into possibleMoves list
@@ -293,27 +301,32 @@ class Queen(Piece):
 ### ROOK CLASS ###
 class Rook(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
-	def calcMoves(self, chessboard):
+	def calcMoves(self):
 		possibleMoves = [] # List of possible moves to return
+		# Possible moves in specific direction away from origin
+		possibleUpMoves = []
+		possibleRightMoves = []
+		possibleDownMoves = []
+		possibleLeftMoves = []
 
 		# Makes code below easier to read
 		x = self.position['x']
 		y = self.position['y']
 
 		# If neighboring up position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x, 'y': y + 1}):
+		if chessboard.checkPos({'x': x, 'y': y + 1}):
 			possibleUpMoves = self.linearTraversal({'x': x, 'y': y + 1}, 0, 1)
 
 		# If neighboring right position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x + 1, 'y': y}):
+		if chessboard.checkPos({'x': x + 1, 'y': y}):
 			possibleRightMoves = self.linearTraversal({'x': x + 1, 'y': y}, 1, 0)
 		
 		# If neighboring down position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x, 'y': y - 1}):
+		if chessboard.checkPos({'x': x, 'y': y - 1}):
 			possibleDownMoves = self.linearTraversal({'x': x, 'y': y - 1}, 0, -1)
 		
 		# If neighboring left position is within bounds travel as far as possible in that direction
-		if self.checkBounds({'x': x - 1, 'y': y}):
+		if chessboard.checkPos({'x': x - 1, 'y': y}):
 			possibleLeftMoves = self.linearTraversal({'x': x - 1, 'y': y}, -1, 0)
 
 		# Combine all the lists together into possibleMoves list
@@ -344,20 +357,46 @@ class Chessboard:
 
 			# Create the appropriate piece
 			if validAttr(splitData[1], NAMEARR) == NAMEARR[0]:
-				newPiece = Bishop(splitData[0], splitData[1], splitData[2])
+				newPiece = Bishop(splitData[0], splitData[1], splitData[2], self)
 			elif validAttr(splitData[1], NAMEARR) == NAMEARR[1]:
-				newPiece = King(splitData[0], splitData[1], splitData[2])
+				newPiece = King(splitData[0], splitData[1], splitData[2], self)
 			elif validAttr(splitData[1], NAMEARR) == NAMEARR[2]:
-				newPiece = Knight(splitData[0], splitData[1], splitData[2])
+				newPiece = Knight(splitData[0], splitData[1], splitData[2], self)
 			elif validAttr(splitData[1], NAMEARR) == NAMEARR[3]:
-				newPiece = Pawn(splitData[0], splitData[1], splitData[2])
+				newPiece = Pawn(splitData[0], splitData[1], splitData[2], self)
 			elif validAttr(splitData[1], NAMEARR) == NAMEARR[4]:
-				newPiece = Queen(splitData[0], splitData[1], splitData[2])
+				newPiece = Queen(splitData[0], splitData[1], splitData[2], self)
 			elif validAttr(splitData[1], NAMEARR) == NAMEARR[5]:
-				newPiece = Rook(splitData[0], splitData[1], splitData[2])
+				newPiece = Rook(splitData[0], splitData[1], splitData[2], self)
 			
 			self.board[newPiece.position['x']][newPiece.position['y']] = newPiece
 			self.pieces.append(newPiece)
+
+	# Checks if input position (must be in index format) is within the bounds of the board
+	def checkBounds(self, position):
+		if position['x'] < 0 or position['x'] >= BOARD_SIZE or position['y'] < 0 or position['y'] >= BOARD_SIZE:
+			return False
+		return True
+
+	# Show what is at position (x,y) on the board
+	def getPos(self, position):
+		if self.board[position['x']][position['y']] is None:
+			return None
+		return self.board[position['x']][position['y']]
+
+	# Returns true if the position is open or has an enemy piece on it. False otherwise.
+	def checkPos(self, position):
+		if self.checkBounds(position):
+			if self.getPos(position) is None:
+				print 'nothin here'
+				return True
+			elif self.getPos(position).color != self.playerColor:
+				print position
+				print self.getPos(position)
+				print self.getPos(position).color
+				print 'enemy here'
+				return True
+		return False
 
 	# Prints all possible legal moves for current player
 	def printLegalMoves(self):
@@ -368,7 +407,7 @@ class Chessboard:
 			if piece.color == self.playerColor:
 				currName = piece.name
 				currPos = piece.position
-				possibleMoves = piece.calcMoves(self)
+				possibleMoves = piece.calcMoves()
 				pieceCount += 1
 			
 				if possibleMoves:
@@ -388,12 +427,6 @@ class Chessboard:
 
 		# Print summary statement
 		print str(moveCount) + ' legal ' + moveWord + ' (' + str(pieceCount) + ' unique ' + pieceWord + ') for ' + self.playerColor.lower() + ' player'
-
-	# Show what is at position (x,y) on the board
-	def getPos(self, position):
-		if self.board[position['x']][position['y']] is None:
-			return None
-		return self.board[position['x']][position['y']]
 
 	# Print chessboard data
 	def printData(self):
