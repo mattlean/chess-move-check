@@ -148,8 +148,8 @@ class Pawn(Piece):
 		return possibleMoves
 
 
-### Rook Class which inherits from Piece ###
-class Rook(Piece):
+### Bishop Class which inherits from Piece ###
+class Bishop(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, chessboard):
 		possibleMoves = [] # List of possible moves to return
@@ -204,8 +204,8 @@ class Rook(Piece):
 		return possibleMoves
 
 
-### Bishop Class which inherits from Piece ###
-class Bishop(Piece):
+### Rook Class which inherits from Piece ###
+class Rook(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, playerColor, board):
 		print 'hurray'
