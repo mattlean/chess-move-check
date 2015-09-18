@@ -157,21 +157,26 @@ class Rook(Piece):
 		y = self.position['y']
 
 		print 'Start Pos: ' + '(' + str(self.position['x']) + ',' + str(self.position['y']) + ')'
-		self.recursiveTraversal({'x': x, 'y': y})
+		print self.recursiveTraversal({'x': x, 'y': y})
 
 	# Recursively traverses board until it reaches the end
 	def recursiveTraversal(self, position):
-		x = position['x'] + 1
-		y = position['y'] + 1
+		x = position['x']
+		y = position['y']
+		count = 1
 
 		print 'Currently on: (' + str(x) + ',' + str(y) + ')'
 
+		x += 1
+		y += 1
+
 		if self.checkBounds({'x': x, 'y': y}):
-			self.recursiveTraversal({'x': x, 'y': y})
+			count += self.recursiveTraversal({'x': x, 'y': y})
 		else:
-			return
+			return 0
 
 		print 'Exiting: (' + str(x) + ',' + str(y) + ')'
+		return count
 
 
 ### Bishop Class which inherits from Piece ###
