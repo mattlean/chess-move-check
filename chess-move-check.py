@@ -102,11 +102,6 @@ class Bishop(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self):
 		possibleMoves = [] # List of possible moves to return
-		# Possible moves in specific direction away from origin
-		possibleUpRightMoves = []
-		possibleDownRightMoves = []
-		possibleDownLeftMoves = []
-		possibleUpLeftMoves = []
 
 		# Makes code below easier to read
 		x = self.position['x']
@@ -126,7 +121,7 @@ class Bishop(Piece):
 				newPossibleMoves = self.linearTraversal({'x': x + neighbor['dX'], 'y': y + neighbor['dY']}, neighbor['dX'], neighbor['dY'])
 				possibleMoves += newPossibleMoves
 			elif posState == 'Enemy':
-				possibleMoves.append(neighbor)
+				possibleMoves.append({'x': x + neighbor['dX'], 'y': y + neighbor['dY']})
 
 		return possibleMoves
 
@@ -244,54 +239,30 @@ class Queen(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self):
 		possibleMoves = [] # List of possible moves to return
-		# Possible moves in specific direction away from origin
-		possibleUpRightMoves = []
-		possibleDownRightMoves = []
-		possibleDownLeftMoves = []
-		possibleUpLeftMoves = []
-		possibleUpMoves = []
-		possibleRightMoves = []
-		possibleDownMoves = []
-		possibleLeftMoves = []
 
 		# Makes code below easier to read
 		x = self.position['x']
 		y = self.position['y']
+		
+		neighbors = [
+			{'dX': 1, 'dY': 1}, # Up-right
+			{'dX': 1, 'dY': -1}, # Down-right
+			{'dX': -1, 'dY': -1}, # Down-left
+			{'dX': -1, 'dY': 1}, # Up-left
+			{'dX': 0, 'dY': 1}, # Up
+			{'dX': 1, 'dY': 0}, # Right
+			{'dX': 0, 'dY': -1}, # Down
+			{'dX': -1, 'dY': 0} # Left
+		]
 
-		# If neighboring up-right position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x + 1, 'y': y + 1}):
-			possibleUpRightMoves = self.linearTraversal({'x': x + 1, 'y': y + 1}, 1, 1)
-
-		# If neighboring down-right position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x + 1, 'y': y - 1}):
-			possibleDownRightMoves = self.linearTraversal({'x': x + 1, 'y': y - 1}, 1, -1)
-
-		# If neighboring down-left position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x - 1, 'y': y - 1}):
-			possibleDownLeftMoves = self.linearTraversal({'x': x - 1, 'y': y - 1}, -1, -1)
-
-		# If neighboring up-left position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x - 1, 'y': y + 1}):
-			possibleUpLeftMoves = self.linearTraversal({'x': x - 1, 'y': y + 1}, -1, 1)
-
-		# If neighboring up position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x, 'y': y + 1}):
-			possibleUpMoves = self.linearTraversal({'x': x, 'y': y + 1}, 0, 1)
-
-		# If neighboring right position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x + 1, 'y': y}):
-			possibleRightMoves = self.linearTraversal({'x': x + 1, 'y': y}, 1, 0)
-
-		# If neighboring down position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x, 'y': y - 1}):
-			possibleDownMoves = self.linearTraversal({'x': x, 'y': y - 1}, 0, -1)
-
-		# If neighboring left position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x - 1, 'y': y}):
-			possibleLeftMoves = self.linearTraversal({'x': x - 1, 'y': y}, -1, 0)
-
-		# Combine all the lists together into possibleMoves list
-		possibleMoves = possibleUpRightMoves + possibleDownRightMoves + possibleDownLeftMoves + possibleUpLeftMoves + possibleUpMoves + possibleRightMoves + possibleDownMoves + possibleLeftMoves
+		# If neighboring position is within bounds travel as far as possible in that direction
+		for neighbor in neighbors:
+			posState = chessboard.getPosState({'x': x + neighbor['dX'], 'y': y + neighbor['dY']}) # state of position on board
+			if posState == 'Open':
+				newPossibleMoves = self.linearTraversal({'x': x + neighbor['dX'], 'y': y + neighbor['dY']}, neighbor['dX'], neighbor['dY'])
+				possibleMoves += newPossibleMoves
+			elif posState == 'Enemy':
+				possibleMoves.append({'x': x + neighbor['dX'], 'y': y + neighbor['dY']})
 
 		return possibleMoves
 
@@ -300,34 +271,26 @@ class Rook(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self):
 		possibleMoves = [] # List of possible moves to return
-		# Possible moves in specific direction away from origin
-		possibleUpMoves = []
-		possibleRightMoves = []
-		possibleDownMoves = []
-		possibleLeftMoves = []
 
 		# Makes code below easier to read
 		x = self.position['x']
 		y = self.position['y']
+		
+		neighbors = [
+			{'dX': 0, 'dY': 1}, # Up
+			{'dX': 1, 'dY': 0}, # Right
+			{'dX': 0, 'dY': -1}, # Down
+			{'dX': -1, 'dY': 0} # Left
+		]
 
-		# If neighboring up position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x, 'y': y + 1}):
-			possibleUpMoves = self.linearTraversal({'x': x, 'y': y + 1}, 0, 1)
-
-		# If neighboring right position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x + 1, 'y': y}):
-			possibleRightMoves = self.linearTraversal({'x': x + 1, 'y': y}, 1, 0)
-
-		# If neighboring down position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x, 'y': y - 1}):
-			possibleDownMoves = self.linearTraversal({'x': x, 'y': y - 1}, 0, -1)
-
-		# If neighboring left position is within bounds travel as far as possible in that direction
-		if chessboard.checkPos({'x': x - 1, 'y': y}):
-			possibleLeftMoves = self.linearTraversal({'x': x - 1, 'y': y}, -1, 0)
-
-		# Combine all the lists together into possibleMoves list
-		possibleMoves = possibleUpMoves + possibleRightMoves + possibleDownMoves + possibleLeftMoves
+		# If neighboring position is within bounds travel as far as possible in that direction
+		for neighbor in neighbors:
+			posState = chessboard.getPosState({'x': x + neighbor['dX'], 'y': y + neighbor['dY']}) # state of position on board
+			if posState == 'Open':
+				newPossibleMoves = self.linearTraversal({'x': x + neighbor['dX'], 'y': y + neighbor['dY']}, neighbor['dX'], neighbor['dY'])
+				possibleMoves += newPossibleMoves
+			elif posState == 'Enemy':
+				possibleMoves.append({'x': x + neighbor['dX'], 'y': y + neighbor['dY']})
 
 		return possibleMoves
 
