@@ -158,13 +158,19 @@ class Rook(Piece):
 		x = self.position['x']
 		y = self.position['y']
 
-		possibleUpRightMoves = self.linearTraversal({'x': x + 1, 'y': y + 1}, 1, 1, 0)
-		possibleDownRightMoves = self.linearTraversal({'x': x + 1, 'y': y - 1}, 1, -1, 0)
-		possibleDownLeftMoves = self.linearTraversal({'x': x - 1, 'y': y - 1}, -1, -1, 0)
-		possibleUpLeftMoves = self.linearTraversal({'x': x - 1, 'y': y + 1}, -1, 1, 0)
+		if self.checkBounds({'x': x + 1, 'y': y + 1}):
+			possibleUpRightMoves = self.linearTraversal({'x': x + 1, 'y': y + 1}, 1, 1, 0)
 
-		possibleMoves = possibleUpRightMoves + possibleDownRightMoves + possibleDownLeftMoves + possibleUpLeftMoves;
-		#possibleMoves = possibleDownRightMoves
+		if self.checkBounds({'x': x + 1, 'y': y - 1}):
+			possibleDownRightMoves = self.linearTraversal({'x': x + 1, 'y': y - 1}, 1, -1, 0)
+		
+		if self.checkBounds({'x': x - 1, 'y': y - 1}):
+			possibleDownLeftMoves = self.linearTraversal({'x': x - 1, 'y': y - 1}, -1, -1, 0)
+		
+		if self.checkBounds({'x': x - 1, 'y': y + 1}):
+			possibleUpLeftMoves = self.linearTraversal({'x': x - 1, 'y': y + 1}, -1, 1, 0)
+
+		possibleMoves = possibleUpRightMoves + possibleDownRightMoves + possibleDownLeftMoves + possibleUpLeftMoves
 
 		return possibleMoves
 
@@ -174,9 +180,6 @@ class Rook(Piece):
 	def linearTraversal(self, position, dX, dY, level):
 		nextPos = {'x': position['x'] + dX, 'y': position['y'] + dY}
 		possibleMoves = []
-
-		if self.checkBounds(position) is False:
-			return possibleMoves
 
 		# Check if next position is within bounds
 		if self.checkBounds(nextPos): 
