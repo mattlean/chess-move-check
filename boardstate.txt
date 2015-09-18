@@ -1,2 +1,4 @@
-PAwn,white,D:4
+WHITe
+bLaCk,KiNg,H:8
+white,PAwn,D:4
 BLACK,RoOk,F:3

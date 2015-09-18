@@ -74,34 +74,56 @@ class Piece:
 
 ### Chessboard Class ###
 class Chessboard:
-	def __init__(self, playerColor, *args):
-		self.playerColor = validAttr(playerColor, COLORSET) # Set player color to determine who's turn it is
+	def __init__(self, playerColor, pieces):
+		self.playerColor = playerColor # Current player color to determine who's turn it is
 		self.pieces = [] # List of all pieces
 		self.board = [] # 2D array representation of board
 
-		# Populate pieces
-		for arg in args:
-			if type(arg) is not list or len(arg) != 2:
-				raise Exception('You input an invalid piece!')
-			else:
-				print 'test'
-	
 		# Initialize empty board
 		for x in range(BOARD_SIZE):
 			self.board.append([])
 			for y in range(BOARD_SIZE):
 				self.board[x].append(None)
 
+		# Populate pieces
+		for i in range(len(pieces)):
+			splitData = pieces[i].split(',')
+
+			if len(splitData) < 3:
+				raise Exception('You input an invalid piece!')
+
+			newPiece = Piece(splitData[0], splitData[1], splitData[2])
+			self.board[newPiece.position['x']][newPiece.position['y']] = newPiece
+			self.pieces.append(newPiece)
+
+	# Show what is at position (x,y)
+	def printPos(self, x, y):
+		if self.board[x][y] is None:
+			print None
+		else:
+			self.board[x][y].printPiece()
+
+	# Print chessboard data
+	def printData(self):
+		print 'Current Player Turn: ' + self.playerColor.capitalize()
+		print 'Pieces: ' + str(self.pieces)
+		print 'Board: ' + str(self.board)
+
 
 ### main() ###
-chessboard = Chessboard(sys.argv[1], sys.argv[2:])
+### File I/O ###
+inputFile = open(sys.argv[1])
+fileBreakdown = inputFile.read().splitlines()
+inputFile.close()
 
-#open(sys.argv[1])
+chessboard = Chessboard(validAttr(fileBreakdown[0], COLORSET), fileBreakdown[1:])
+chessboard.printData()
+#chessboard.printPos(0,3)
+chessboard.printPos(7,7)
 
-piece = Piece('bLaCk', 'KiNg', 'H:8')
+"""piece = Piece('bLaCk', 'KiNg', 'H:8')
 piece.printPiece()
-
 chessPos = formatChess(piece.position)
 print '<' + chessPos['x'] + ':' + chessPos['y'] + '>'
 
-print len(sys.argv)
+print sys.argv"""
