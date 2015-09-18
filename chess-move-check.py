@@ -1,6 +1,12 @@
+"""
+chess-move-check.py
+Matthew Lean
+9/17/2015
+"""
+
 import sys
 
-### Constants ###
+### CONSTANTS ###
 BOARD_SIZE = 8
 # Used for converting from chess to index format
 CHARMAP = {
@@ -17,7 +23,8 @@ COLORSET = set(['Black', 'White']) # Used for checking if input color is valid
 INDEXARR = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] # Used for converting from index to chess format
 NAMEARR = ['Bishop', 'King', 'Knight', 'Pawn', 'Queen', 'Rook'] # Used for checking the appropriate piece name
 
-### Utility Functions ###
+
+### UTILITY FUNCTIONS ###
 # Validates attribute with set. Returns normalized attribute on success.
 def validAttr(attr, checkSet):
 	normalAttr = attr.lower().capitalize()
@@ -45,7 +52,7 @@ def formatChess(position):
 	return '<' + INDEXARR[position['x']] + ':' + str(position['y'] + 1) + '>'
 
 
-### Parent class for all piece types ###
+### PIECE CLASS: Parent for all piece types ###
 class Piece:
 	# Constructor
 	def __init__(self, color, name, position):
@@ -95,8 +102,7 @@ class Piece:
 		position = formatChess(self.position)
 		print self.color + ', ' + self.name + ', ' + position
 
-
-### Bishop Class which inherits from Piece ###
+### BISHOP CLASS ###
 class Bishop(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, chessboard):
@@ -127,8 +133,7 @@ class Bishop(Piece):
 
 		return possibleMoves
 
-
-### King Class which inherits from Piece ###
+### KING CLASS ###
 class King(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, chessboard):
@@ -160,8 +165,7 @@ class King(Piece):
 
 		return possibleMoves
 
-
-### Knight Class which inherits from Piece ###
+### KNIGHT CLASS ###
 class Knight(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, chessboard):
@@ -193,8 +197,7 @@ class Knight(Piece):
 
 		return possibleMoves
 
-
-### Pawn Class which inherits from Piece ###
+### PAWN CLASS ###
 class Pawn(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, chessboard):
@@ -239,8 +242,7 @@ class Pawn(Piece):
 
 		return possibleMoves
 
-
-### Queen Class which inherits from Piece ###
+### QUEEN CLASS ###
 class Queen(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, chessboard):
@@ -287,8 +289,7 @@ class Queen(Piece):
 
 		return possibleMoves
 
-
-### Rook Class which inherits from Piece ###
+### ROOK CLASS ###
 class Rook(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
 	def calcMoves(self, chessboard):
@@ -320,7 +321,7 @@ class Rook(Piece):
 		return possibleMoves
 
 
-### Chessboard Class ###
+### CHESSBOARD CLASS ###
 class Chessboard:
 	def __init__(self, playerColor, pieces):
 		self.playerColor = playerColor # Current player color to determine who's turn it is
@@ -357,6 +358,7 @@ class Chessboard:
 			self.board[newPiece.position['x']][newPiece.position['y']] = newPiece
 			self.pieces.append(newPiece)
 
+	# Prints all possible legal moves for current player
 	def printLegalMoves(self):
 		moveCount = 0
 		pieceCount = 0
