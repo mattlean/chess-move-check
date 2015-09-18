@@ -105,11 +105,33 @@ class King(Piece):
 ### Pawn Class which inherits from Piece ###
 class Pawn(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
-	def calcMoves(self, playerColor, board):
-		print 'hurray'
-		print playerColor
-		self.printPiece()
-		print board
+	def calcMoves(self, chessboard):
+		possibleMoves = [] # List of possible moves to return
+
+		# Makes code below easier to read
+		x = self.position['x']
+		y = self.position['y']
+
+		# Controls direction of pawn depending on player color
+		direction = 1 # White pawns move up
+		if chessboard.playerColor == 'Black':
+			direction = -1 # Black pawns move down
+
+		# Pawn movement options
+		# Check if pawn can move forward
+		oneAheadPos = {'x': x, 'y': y + (1 * direction)}
+
+		if self.checkBounds(oneAheadPos) and chessboard.getPos(oneAheadPos) is None:
+			possibleMoves.append(oneAheadPos)
+
+		# Check if pawn move 2 squares from start position
+		if (chessboard.playerColor == 'White' and y == 1) or (chessboard.playerColor == 'Black' and y == 6):
+			twoAheadPos = {'x': x, 'y': y + (2 * direction)}
+
+			if self.checkBounds(twoAheadPos) and chessboard.getPos(twoAheadPos) is None:
+				possibleMoves.append(twoAheadPos)
+
+		return possibleMoves
 
 
 ### Rook Class which inherits from Piece ###
@@ -192,16 +214,15 @@ class Chessboard:
 	def printLegalMoves(self):
 		moveCount = 0
 
-		if self.pieces[0].color == self.playerColor:
-			#iterate through each piece and do the following
+		for piece in self.pieces:
+			if piece.color == self.playerColor:
+				currName = piece.name
+				currPos = piece.position
+				possibleMoves = piece.calcMoves(self)
 			
-			currName = self.pieces[0].name
-			currPos = self.pieces[0].position
-			possibleMoves = self.pieces[0].calcMoves(self)
-			
-			for possibleMove in possibleMoves:
-				print currName + ' at ' + formatChess(currPos) + ' can move to ' + formatChess(possibleMove)
-				moveCount += 1
+				for possibleMove in possibleMoves:
+					print currName + ' at ' + formatChess(currPos) + ' can move to ' + formatChess(possibleMove)
+					moveCount += 1
 
 		print str(moveCount) + ' legal moves (' + str(len(self.pieces)) + ' unique pieces) for ' + self.playerColor.lower() + ' player'
 
