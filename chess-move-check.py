@@ -66,7 +66,7 @@ class Piece:
 	# Prints out piece info (Color, Name, Position)
 	def printPiece(self):
 		position = formatChess(self.position)
-		print self.color.capitalize() + ', ' + self.name.capitalize() + ', ' + position
+		print self.color + ', ' + self.name + ', ' + position
 
 
 ### King Class which inherits from Piece ###
@@ -203,12 +203,16 @@ class Chessboard:
 
 	def printLegalMoves(self):
 		#iterate through each piece and do the following
+		moveCount = 0
 		currName = chessboard.pieces[0].name
 		currPos = chessboard.pieces[0].position
 		possibleMoves = chessboard.pieces[0].calcMoves(chessboard.playerColor, chessboard.board)
 		
 		for possibleMove in possibleMoves:
 			print currName + ' at ' + formatChess(currPos) + ' can move to ' + formatChess(possibleMove)
+			moveCount += 1
+
+		print str(moveCount) + ' legal moves (' + str(len(self.pieces)) + ' unique pieces) for ' + self.playerColor.lower() + ' player'
 
 	# Show what is at position (x,y) on the board
 	def printPos(self, x, y):
