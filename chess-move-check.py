@@ -2,8 +2,20 @@ import sys
 
 ### Constants ###
 BOARD_SIZE = 8
+# Used for converting from chess to index format
+CHARMAP = {
+	'A': 0,
+	'B': 1,
+	'C': 2,
+	'D': 3,
+	'E': 4,
+	'F': 5,
+	'G': 6,
+	'H': 7
+}
 COLORSET = set(['black', 'white']) # Used for checking if input color is valid
-
+INDEXMAP = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] # Used for converting from index to chess format
+NAMEARR = ['bishop', 'king', 'knight', 'pawn', 'queen', 'rook'] # Used for checking if input piece name is valid
 
 ### Utility Functions ###
 # Validates attribute with set. Returns normalized attribute on success.
@@ -20,56 +32,79 @@ def formatIndex(position):
 	splitPos = position.split(':')
 	charCoord = splitPos[0].capitalize()
 
-	if charCoord not in Piece._CHARMAP:
+	if charCoord not in CHARMAP:
 		raise Exception('You input a piece with an invalid X coordinate!')
 
 	if int(splitPos[1]) < 1 or int(splitPos[1]) > BOARD_SIZE:
 		raise Exception('You input a piece with an invalid Y coordinate!')
 
-	return {'x': Piece._CHARMAP[charCoord], 'y': int(splitPos[1]) - 1}
+	return {'x': CHARMAP[charCoord], 'y': int(splitPos[1]) - 1}
 
 # Converts input position from list index format (ex. 1,2) to chess format (ex. B:3)
 def formatChess(position):
-	return {'x': Piece._INDEXMAP[position['x']], 'y': str(position['y'] + 1)}
+	return {'x': INDEXMAP[position['x']], 'y': str(position['y'] + 1)}
 
 
 ### Parent class for all piece types ###
 class Piece:
-	# Used for converting from chess to index format
-	_CHARMAP = {
-		'A': 0,
-		'B': 1,
-		'C': 2,
-		'D': 3,
-		'E': 4,
-		'F': 5,
-		'G': 6,
-		'H': 7
-	}
-
-	# Used for converting from index to chess format
-	_INDEXMAP = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-
-	# Used for checking if input piece name is valid
-	_NAMESET = set(['bishop', 'king', 'knight', 'pawn', 'queen', 'rook'])
-
 	# Constructor
 	def __init__(self, color, name, position):
 		self.color = validAttr(color, COLORSET)
-		self.name = validAttr(name, Piece._NAMESET)
+		self.name = validAttr(name, NAMEARR)
 		self.position = formatIndex(position)
 
 	# Implementation for move validation. Changes depending on piece type.
-	def _moveCalc(self, board):
+	def calcMoves(self, board):
 		raise NotImplementedError
-
-	# Checks for possible moves for piece. Returns list of possible moves.
-	def moveCheck(self, board):
-		return self.moveCalc(board)
 
 	# Prints out piece info (Color, Name, Position)
 	def printPiece(self):
-		print self.color.capitalize() + ', ' + self.name.capitalize() + ', <' + str(self.position['x']) + ':' + str(self.position['y']) + '>'
+		chessStylePos = formatChess(self.position)
+		print self.color.capitalize() + ', ' + self.name.capitalize() + ', <' + chessStylePos['x'] + ':' + chessStylePos['y'] + '>'
+
+
+### King Class which inherits from Piece ###
+class King(Piece):
+	# Checks for possible moves for piece. Returns list of possible moves.
+	def calcMoves(self, playerColor, board):
+		print 'hurray'
+		print playerColor
+		print board
+
+
+### Pawn Class which inherits from Piece ###
+class Pawn(Piece):
+	# Checks for possible moves for piece. Returns list of possible moves.
+	def calcMoves(self, playerColor, board):
+		print 'hurray'
+
+
+### Rook Class which inherits from Piece ###
+class Rook(Piece):
+	# Checks for possible moves for piece. Returns list of possible moves.
+	def calcMoves(self, playerColor, board):
+		print 'hurray'
+
+
+### Bishop Class which inherits from Piece ###
+class Bishop(Piece):
+	# Checks for possible moves for piece. Returns list of possible moves.
+	def calcMoves(self, playerColor, board):
+		print 'hurray'
+
+
+### Queen Class which inherits from Piece ###
+class Queen(Piece):
+	# Checks for possible moves for piece. Returns list of possible moves.
+	def calcMoves(self, playerColor, board):
+		print 'hurray'
+
+
+### Knight Class which inherits from Piece ###
+class Knight(Piece):
+	# Checks for possible moves for piece. Returns list of possible moves.
+	def calcMoves(self, playerColor, board):
+		print 'hurray'
 
 
 ### Chessboard Class ###
@@ -85,14 +120,27 @@ class Chessboard:
 			for y in range(BOARD_SIZE):
 				self.board[x].append(None)
 
-		# Populate pieces
+		# Populate pieces list
 		for i in range(len(pieces)):
 			splitData = pieces[i].split(',')
 
 			if len(splitData) < 3:
 				raise Exception('You input an invalid piece!')
 
-			newPiece = Piece(splitData[0], splitData[1], splitData[2])
+			# Create the appropriate piece
+			if validAttr(splitData[1], NAMEARR) == NAMEARR[0]:
+				newPiece = Bishop(splitData[0], splitData[1], splitData[2])
+			elif validAttr(splitData[1], NAMEARR) == NAMEARR[1]:
+				newPiece = King(splitData[0], splitData[1], splitData[2])
+			elif validAttr(splitData[1], NAMEARR) == NAMEARR[2]:
+				newPiece = Knight(splitData[0], splitData[1], splitData[2])
+			elif validAttr(splitData[1], NAMEARR) == NAMEARR[3]:
+				newPiece = Pawn(splitData[0], splitData[1], splitData[2])
+			elif validAttr(splitData[1], NAMEARR) == NAMEARR[4]:
+				newPiece = Queen(splitData[0], splitData[1], splitData[2])
+			elif validAttr(splitData[1], NAMEARR) == NAMEARR[5]:
+				newPiece = Rook(splitData[0], splitData[1], splitData[2])
+			
 			self.board[newPiece.position['x']][newPiece.position['y']] = newPiece
 			self.pieces.append(newPiece)
 
@@ -111,19 +159,17 @@ class Chessboard:
 
 
 ### main() ###
-### File I/O ###
+# File I/O
+#print sys.argv
 inputFile = open(sys.argv[1])
 fileBreakdown = inputFile.read().splitlines()
 inputFile.close()
 
 chessboard = Chessboard(validAttr(fileBreakdown[0], COLORSET), fileBreakdown[1:])
 chessboard.printData()
-#chessboard.printPos(0,3)
+chessboard.printPos(0,3)
 chessboard.printPos(7,7)
-
-"""piece = Piece('bLaCk', 'KiNg', 'H:8')
-piece.printPiece()
-chessPos = formatChess(piece.position)
-print '<' + chessPos['x'] + ':' + chessPos['y'] + '>'
-
-print sys.argv"""
+chessboard.printPos(3,3)
+chessboard.printPos(5,2)
+chessboard.printPos(5,1)
+chessboard.board[3][3].calcMoves(chessboard.playerColor, chessboard.board)
