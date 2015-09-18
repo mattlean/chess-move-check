@@ -151,11 +151,27 @@ class Pawn(Piece):
 ### Rook Class which inherits from Piece ###
 class Rook(Piece):
 	# Checks for possible moves for piece. Returns list of possible moves.
-	def calcMoves(self, playerColor, board):
-		print 'hurray'
-		print playerColor
-		self.printPiece()
-		print board
+	def calcMoves(self, chessboard):
+		# Makes code below easier to read
+		x = self.position['x']
+		y = self.position['y']
+
+		print 'Start Pos: ' + '(' + str(self.position['x']) + ',' + str(self.position['y']) + ')'
+		self.recursiveTraversal({'x': x, 'y': y})
+
+	# Recursively traverses board until it reaches the end
+	def recursiveTraversal(self, position):
+		x = position['x'] + 1
+		y = position['y'] + 1
+
+		print 'Currently on: (' + str(x) + ',' + str(y) + ')'
+
+		if self.checkBounds({'x': x, 'y': y}):
+			self.recursiveTraversal({'x': x, 'y': y})
+		else:
+			return
+
+		print 'Exiting: (' + str(x) + ',' + str(y) + ')'
 
 
 ### Bishop Class which inherits from Piece ###
@@ -236,9 +252,10 @@ class Chessboard:
 				possibleMoves = piece.calcMoves(self)
 				pieceCount += 1
 			
-				for possibleMove in possibleMoves:
-					print currName + ' at ' + formatChess(currPos) + ' can move to ' + formatChess(possibleMove)
-					moveCount += 1
+				if possibleMoves:
+					for possibleMove in possibleMoves:
+						print currName + ' at ' + formatChess(currPos) + ' can move to ' + formatChess(possibleMove)
+						moveCount += 1
 
 		# Pluralizes words (There you go grammar freaks jeeeez)
 		moveWord = 'moves'
