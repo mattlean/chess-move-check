@@ -4,6 +4,7 @@ Matthew Lean
 9/17/2015
 """
 
+import os
 import sys
 
 ### CONSTANTS ###
@@ -402,11 +403,28 @@ class Chessboard:
 
 
 ### void main() ###
-# File I/O
-inputFile = open(sys.argv[1])
-fileBreakdown = inputFile.read().splitlines()
-inputFile.close()
+if len(sys.argv) <= 1:
+	print"""
+Usage:	python chess-move-check.py <board-state-txt>
 
-# Do the magic!
-chessboard = Chessboard(validAttr(fileBreakdown[0], COLORSET), fileBreakdown[1:])
-chessboard.printLegalMoves()
+Info:	The script takes in a text file that determines the state of the chessboard.
+		The first line of the text file should be the current turn's player color.
+		Each line in the rest of the file represent a piece in this format:
+			
+			Color,Piece Name,Location
+
+		One example of this is:
+
+			White,Knight,D:4"""
+else:
+	# File I/O
+	if os.stat(sys.argv[1]).st_size == 0:
+		print 'The file you input is blank!'
+	else:
+		inputFile = open(sys.argv[1])
+		fileBreakdown = inputFile.read().splitlines()
+		inputFile.close()
+
+		# Do the magic!
+		chessboard = Chessboard(validAttr(fileBreakdown[0], COLORSET), fileBreakdown[1:])
+		chessboard.printLegalMoves()
