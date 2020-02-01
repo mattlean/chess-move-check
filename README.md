@@ -2,7 +2,7 @@
 Written by: Matthew Lean
 
 ### How to Run ###
-First you must have Python install. Then to run the program you input the following command:
+First you must have Python installed. Then to run the program you input the following command:
 `python chess-move-check.py <board-state-txt>`
 
 `<board-state-txt>` represents the file location of the text file that tells the script the current state of the board.
